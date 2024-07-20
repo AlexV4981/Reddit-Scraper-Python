@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 
 # Base URL and subreddit name
 base_url = 'https://www.reddit.com'
-subreddit_name = 'TrueOffMyChest'
+subreddit_name =  input('Must be the EXACT casing of the subreddit name: ')
 
 
 # Function to extract title and text body from a post URL
@@ -12,19 +12,31 @@ def extract_post_details(post_url):
     if response.ok:
         soup = BeautifulSoup(response.content, 'html.parser')
 
-        # Simplified selector targeting parent element
-        parent_element = soup.find('div', class_='mb-sm mb-xs px-md xs:px-0')
-        if parent_element:
-            body_element = parent_element.find('div', id=lambda id_: id_.startswith('t3_') and id_.endswith('-post-rtjson-content'))
-            text_body = body_element.text.strip() if body_element else None
-        else:
-            # Handle case where parent element is missing (e.g., set text_body to None or handle differently)
-            text_body = "None"
+        # Improved selector targeting h1 element with dynamic ID
+        title_element = soup.find('h1', id=lambda id_: id_.startswith('post-title-t3_'))
 
-        return "title missing", text_body, post_url  # Assuming title extraction remains the same
+        if title_element:
+            # Extract title (handling potential None value)
+            title = title_element.text.strip() if title_element else None
+
+            # Existing logic for body element (assuming it's already implemented)
+            parent_element = soup.find('div', class_='mb-sm mb-xs px-md xs:px-0')
+            if parent_element:
+                body_element = parent_element.find('div', id=lambda id_: id_.startswith('t3_') and id_.endswith('-post-rtjson-content'))
+                text_body = body_element.text.strip() if body_element else None
+            else:
+                text_body = "None or Post has no Body"  # Or handle case where parent element is missing
+
+            return title, text_body, post_url  # Now returns URL, title, and body
+        else:
+            # Handle case where title element is missing
+            title = "None"
+            text_body = "None or Post has no body"  # Or handle differently based on your needs
+
     else:
         print(f'Error: Could not fetch post content for {post_url}')
         return None, None, None
+
 
 
 
