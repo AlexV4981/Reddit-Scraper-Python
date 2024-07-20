@@ -5,7 +5,7 @@ subreddit = 'programming'
 url = f'https://www.reddit.com/r/{subreddit}/top/?t=week'
 
 headers = {
-    'User-Agent' : 'Protsy_'
+    'User-Agent' : 'NAUR'
 }
 
 response = requests.get(url, headers=headers)
