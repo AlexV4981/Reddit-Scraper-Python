@@ -19,12 +19,13 @@ def extract_post_details(post_url):
             text_body = body_element.text.strip() if body_element else None
         else:
             # Handle case where parent element is missing (e.g., set text_body to None or handle differently)
-            text_body = "None"  # Or implement alternative logic
+            text_body = "None"
 
-        return " missing", text_body  # Assuming title extraction remains the same
+        return "title missing", text_body, post_url  # Assuming title extraction remains the same
     else:
         print(f'Error: Could not fetch post content for {post_url}')
-        return None, None
+        return None, None, None
+
 
 
 
@@ -52,10 +53,10 @@ for page in range(1, 3):  # Adjust the range for desired number of pages
             individual_post_url = base_url + link['href']
 
             # Call the function to extract details from each post URL
-            title, text_body = extract_post_details(individual_post_url)
+            title, text_body, post_url = extract_post_details(individual_post_url)
 
             # Append extracted details (or None if error) to the list
-            all_post_details.append((title, text_body))
+            all_post_details.append((title, text_body, post_url))
 
         last_post = soup.find('a', rel='next')
         if last_post:
@@ -66,8 +67,10 @@ for page in range(1, 3):  # Adjust the range for desired number of pages
 
 # Print extracted details (modify as needed)
 if all_post_details:
-    for title, body in all_post_details:
+    for title, body, post_url in all_post_details:
         print(f"--- Post ---")
+        if post_url:
+            print(f"URL: {post_url}")
         if title:
             print(f"Title: {title}")
         if body:
