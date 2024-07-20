@@ -1,30 +1,31 @@
 import requests
 from bs4 import BeautifulSoup
-subreddit = 'programming'
 
-url = f'https://www.reddit.com/r/{subreddit}/top/?t=week'
+base_url = 'https://www.reddit.com'
+subreddit_name = 'TrueOffMyChest'
 
-headers = {
-    'User-Agent' : 'NAUR'
-}
+listings_url = f"{base_url}/r/{subreddit_name}/top/?t=week"
 
-response = requests.get(url, headers=headers)
-
+response = requests.get(listings_url)
 if response.ok:
+    print("EEEEEEEEEE")
     soup = BeautifulSoup(response.content, 'html.parser')
-
-posts = soup.find_all("article", class_="w-full m-0", limit=20)
-
-for post in posts:
-    title_element = post.find('a', class_='title')
-    score_element = post.find('span', class_='score')
-    if title_element and score_element:
-        print("HEY")
-        print(f"Title: {title_element.text.strip()}")
-        print(f"Score: {score_element.text.strip()}")
-       # print('-' * 4)
-    else:
-        print(f'Error {response.status_code}')
+else:
+    print(f'Error {response.status_code} while fetching listings URL')
 
 
+post_links = soup.find_all('a', class_='absolute inset-0')
 
+top_20_links = post_links[:20]
+
+individual_post_urls = []
+
+for link in top_20_links:
+    individual_post_urls.append(base_url + link['href'])
+
+
+    
+
+
+for url in individual_post_urls:
+    print(f"{url}")
