@@ -2,13 +2,12 @@ import requests
 from bs4 import BeautifulSoup
 
 base_url = 'https://www.reddit.com'
-subreddit_name = 'TrueOffMyChest'
+subreddit_name = ''
 
 listings_url = f"{base_url}/r/{subreddit_name}/top/?t=week"
 
 response = requests.get(listings_url)
 if response.ok:
-    print("EEEEEEEEEE")
     soup = BeautifulSoup(response.content, 'html.parser')
 else:
     print(f'Error {response.status_code} while fetching listings URL')
@@ -23,8 +22,8 @@ individual_post_urls = []
 for link in top_20_links:
     individual_post_urls.append(base_url + link['href'])
 
+print(len(individual_post_urls))
 
-    
 
 
 for url in individual_post_urls:
