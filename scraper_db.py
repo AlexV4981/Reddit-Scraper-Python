@@ -98,20 +98,37 @@ def amount_of_posts():
     finally:
         conn.close()
 
-def scrape_and_save_all_posts(Subreddit=str,printAmount=False):
+def scrape_and_save_all_posts(Subreddit=str, printAmount=False):
   """
   Scrapes all posts from a specified subreddit and saves them to the database.
-  ScrapedPosts must also run get_all_post_details to become a list to be used
+  ScrapedPosts must run get_all_post_details to become a list to be used
   printAmount is optional
 
   Args:
-    Subreddit (str): The name of the subreddit to scrape posts from.
-    printAmount (bool): Whether or not you want to print the amount of posts scraped.
+      Subreddit (str): The name of the subreddit to scrape posts from.
+      printAmount (bool): Whether or not you want to print the amount of posts scraped.
 
   Returns:
-    None
+      None
   """
 
+  # Try creating the table (redditPosts) if it doesn't exist
+  try:
+      conn = sqlite3.connect('scraper.db')
+      c = conn.cursor()
+      c.execute('''CREATE TABLE IF NOT EXISTS redditPosts (
+                  title TEXT,
+                  body TEXT,
+                  url TEXT
+              )''')
+      conn.commit()
+  except sqlite3.Error as e:
+      print(f"Error creating table: {e}")
+  finally:
+      if conn:
+          conn.close()
+
+  # Rest of the original code (without changes)
   # Scrape posts from the specified subreddit
   ScrapedPosts = RedditPostExtractor(Subreddit)
   ScrapedPosts.get_all_post_details(print_details=False)  # Suppress printing details during scraping
@@ -124,7 +141,7 @@ def scrape_and_save_all_posts(Subreddit=str,printAmount=False):
 
   # Print the number of posts in the database (assuming amount_of_posts is a function)
   if printAmount:
-    print(amount_of_posts())
+      print(amount_of_posts())
 
 def get_all_from_table(database_file='scraper.db', table_name='redditPosts'):
   """
@@ -184,3 +201,6 @@ def get_table_by_index(database_file='scraper.db', table_name='redditPosts', ind
 
   finally:
     conn.close()
+
+
+

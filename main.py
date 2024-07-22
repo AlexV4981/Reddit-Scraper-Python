@@ -36,8 +36,7 @@ def main():
       if args.file:
           json_file = args.file
       else:
-          json_file = input("Enter the JSON file for conversion: ")
-      convert_json_to_speech(json_file)
+        convert_json_to_speech()
     elif choice == '4':
       confirmation = input("Are you sure you want to delete all posts? (y/n): ")
       if confirmation.lower() == 'y':

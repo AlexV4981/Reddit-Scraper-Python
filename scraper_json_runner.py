@@ -54,13 +54,15 @@ def convert_to_json(database_file='scraper.db', table_name='redditPosts', output
 def scrape_posts_to_db(Subreddit=str):
     scrape_and_save_all_posts(Subreddit)
 
-def convert_json_to_speech(json_file='July_21_posts.json'):
+def convert_json_to_speech():
   """
   Converts titles and bodies of posts from a JSON file to separate MP3 files named after the post titles.
 
-  Args:
-      json_file (str, optional): The path to the JSON file containing post data. Defaults to 'your_json_file.json'.
+  Prompts the user for the JSON file path.
   """
+
+  # Get JSON file path from user input
+  json_file = input("Enter the JSON file for conversion: ")
 
   # Load JSON data
   with open(json_file, 'r') as file:
@@ -85,6 +87,5 @@ def convert_json_to_speech(json_file='July_21_posts.json'):
     print(f"Speech generated and saved as '{title}.mp3'")
 
  
-
 
 
