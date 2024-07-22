@@ -1,6 +1,8 @@
 import json
 
 from scraper_db import get_all_from_table 
+from scraper_db import scrape_and_save_all_posts
+from scraper_db import delete_all_posts
 
 def convert_to_json(database_file='scraper.db', table_name='redditPosts', output_file='posts.json'):
   """
@@ -36,4 +38,5 @@ def convert_to_json(database_file='scraper.db', table_name='redditPosts', output
 
   print(f"Posts successfully converted to JSON and saved to '{output_file}'.")
 
-convert_to_json()
+def scrape_posts_to_db(Subreddit=str):
+    scrape_and_save_all_posts(Subreddit)
