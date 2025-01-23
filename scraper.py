@@ -27,31 +27,23 @@ class RedditPostExtractor:
         response = requests.get(post_url)
         if response.ok:
             soup = BeautifulSoup(response.content, 'html.parser')
-
             # Improved selector targeting h1 element with dynamic ID
             title_element = soup.find('h1', id=lambda id_: id_.startswith('post-title-t3_'))
-
             if title_element:
                 # Extract title (handling potential None value)
                 title = title_element.text.strip() if title_element else None
+                print(title)
 
                 # Existing logic for body element (assuming it's already implemented)
-                parent_element = soup.find('div', class_='mb-sm mb-xs px-md xs:px-0')
+                parent_element = soup.find('div', class_='text-neutral-content', slot='text-body')
+                #print(parent_element)
+
                 if parent_element:
-                    body_element = parent_element.find('div', id=lambda id_: id_.startswith('t3_') and id_.endswith('-post-rtjson-content'))
-                    text_body = body_element.text.strip() if body_element else None
-                else:
-                    text_body = "None or Post has no Body"  # Or handle case where parent element is missing
+                    body_element = parent_element.text.strip()
+        
+        return title,body_element
 
-                return title, text_body, post_url
-            else:
-                # Handle case where title element is missing
-                title = "None"
-                text_body = "None or Post has no body"  # Or handle differently based on your needs
 
-        else:
-            print(f'Error: Could not fetch post content for {post_url}')
-            return None, None, None
 
     def get_all_post_details(self, num_pages=2, print_details=False):
         for page in range(1, num_pages + 1):
@@ -66,10 +58,10 @@ class RedditPostExtractor:
                     individual_post_url = self.base_url + link['href']
 
                     # Call the function to extract details from each post URL
-                    title, text_body, post_url = self.extract_post_details(individual_post_url)
+                    title, text_body= self.extract_post_details(individual_post_url)
 
                     # Append extracted details (or None if error) to the list
-                    self.all_post_details.append((title, text_body, post_url))
+                    self.all_post_details.append((title, text_body, individual_post_url))
 
                 last_post = soup.find('a', rel='next')
                 if last_post:
