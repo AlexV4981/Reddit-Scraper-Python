@@ -31,7 +31,7 @@ def main():
           subreddit = input("Enter the subreddit to scrape: ")
       scrape_and_save_all_posts(subreddit)
     elif choice == '2':
-      convert_to_json()  # Use default parameters or prompt for them
+      convert_to_json(wipe=True)  # Use default parameters or prompt for them
     elif choice == '3':
       if args.file:
           json_file = args.file

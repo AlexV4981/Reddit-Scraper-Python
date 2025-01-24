@@ -45,29 +45,41 @@ class RedditPostExtractor:
 
 
 
-    def get_all_post_details(self, num_pages=2, print_details=False):
-        for page in range(1, num_pages + 1):
-            listings_url = self.get_listings_url()
+    def get_all_post_details(self, num_posts=10, print_details=False):
+        seen_posts = set()  # Track seen post URLs to avoid duplicates
+        listings_url = self.get_listings_url()  # Get the initial URL
+        fetched_posts = 0  # Counter for fetched posts
+        
+        while fetched_posts < num_posts:
             response = requests.get(listings_url)
             if response.ok:
                 soup = BeautifulSoup(response.content, 'html.parser')
 
+                # Find all post links
                 post_links = soup.find_all('a', slot="full-post-link", class_='absolute inset-0')
 
                 for link in post_links:
+                    if fetched_posts >= num_posts:
+                        break  # Stop if we've reached the required number of posts
+                    
                     individual_post_url = self.base_url + link['href']
 
-                    # Call the function to extract details from each post URL
-                    title, text_body= self.extract_post_details(individual_post_url)
+                    if individual_post_url not in seen_posts:
+                        seen_posts.add(individual_post_url)  # Mark as seen
+                        title, text_body = self.extract_post_details(individual_post_url)
+                        self.all_post_details.append((title, text_body, individual_post_url))
+                        fetched_posts += 1  # Increment fetched posts counter
 
-                    # Append extracted details (or None if error) to the list
-                    self.all_post_details.append((title, text_body, individual_post_url))
-
+                # Handle pagination using 'after' parameter
                 last_post = soup.find('a', rel='next')
                 if last_post:
-                    self.after_param = last_post.get('href').split('=')[-1]
+                    next_url = last_post.get('href')
+                    listings_url = self.base_url + next_url
+                else:
+                    break  # No more pages
             else:
                 print(f'Error {response.status_code} while fetching listings URL')
+                break
 
         if print_details:
             # Print extracted details
@@ -81,6 +93,9 @@ class RedditPostExtractor:
                 print("No posts found or errors occurred while extracting details.")
 
         return self.all_post_details  # Optionally return the list of extracted details
+
+
+
 
     #title, body, URL is houw the list is made
     def get_post_by_index(self,index):

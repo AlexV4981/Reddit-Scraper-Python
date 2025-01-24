@@ -8,7 +8,7 @@ from scraper_db import delete_all_posts
 
 import datetime
 
-def convert_to_json(database_file='scraper.db', table_name='redditPosts', output_file='posts.json'):
+def convert_to_json(database_file='scraper.db', table_name='redditPosts', output_file='posts.json',wipe=False):
   """
   Retrieves all posts from the database table and converts them into a JSON file.
   The output filename is formatted with the current date (Month_Name_Day).
@@ -49,6 +49,9 @@ def convert_to_json(database_file='scraper.db', table_name='redditPosts', output
       json.dump(json_data, outfile, indent=4)  # Add indentation for readability
 
   print(f"Posts successfully converted to JSON and saved to '{output_file}'.")
+  if wipe:
+      print("Wipe is TRUE")
+      delete_all_posts()
 
 def scrape_posts_to_db(Subreddit=str):
     scrape_and_save_all_posts(Subreddit)
@@ -75,7 +78,7 @@ def get_unique_filename(file_path):
     return file_path
 
 
-def convert_json_to_speech():
+def convert_json_to_speech(wipe=False):
     """
     Converts titles and bodies of posts from a JSON file to separate MP3 files named after the post titles.
     Prompts the user for the JSON file path.
@@ -120,7 +123,7 @@ def convert_json_to_speech():
         sanitized_title = sanitize_filename(title)
 
         # Combine title and body for speech
-        text_to_speak = f"{title}. {body}. You can view the original post at {url}."
+        text_to_speak = f"{title}.{body}."
 
         # Create the MP3 file path inside the folder
         mp3_file_path = os.path.join(folder_path, f"{sanitized_title}.mp3")
@@ -131,7 +134,9 @@ def convert_json_to_speech():
         tts.save(mp3_file_path)  # Save the file in the created folder
 
         print(f"Speech generated and saved as '{mp3_file_path}'")
+    if wipe:
+        print("wipe is TRUE so all posts have been deleted")
+        delete_all_posts()
 
-convert_json_to_speech()
-
+#convert_json_to_speech()
 
