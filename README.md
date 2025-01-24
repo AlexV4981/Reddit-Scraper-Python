@@ -1,7 +1,7 @@
 # Reddit-Scraper-Python
 
-
-
-Compile from the main.py file and you must keep any additional folder that was created within the same folder of the exe.    
-Deleting any other folder will not affect functionality   
-WARNING: All files WILL be made in the same folder as the exe    
+QOL update adds folders named 
+MonthDay(number)
+Folder is generated in the same directory
+TTS files and folders are made at the same time
+Sorted relatively if ran multiple times
