@@ -135,6 +135,3 @@ def convert_json_to_speech(wipe=False):
 
     if wipe:
         delete_all_posts()
-
-
-convert_json_to_speech()
