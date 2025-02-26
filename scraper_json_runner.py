@@ -8,7 +8,7 @@ from scraper_db import delete_all_posts
 
 import datetime
 
-def convert_to_json(database_file='scraper.db', table_name='redditPosts', output_file='posts.json',wipe=False):
+def convert_to_json(database_file='scraper.db', table_name='redditPosts', output_file='posts.json',wipe=True):
     """
     Retrieves all posts from the database table and converts them into a JSON file.
     The output filename is formatted with the current date (Month_Name_Day).
@@ -135,6 +135,3 @@ def convert_json_to_speech(wipe=False):
 
     if wipe:
         delete_all_posts()
-
-
-convert_json_to_speech()
