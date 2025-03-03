@@ -129,9 +129,8 @@ def convert_json_to_speech(wipe=False):
 
         # Save speech to file
         engine.save_to_file(text_to_speak, mp3_file_path)
-        engine.runAndWait()  # Required to generate the file
-
-        print(f"Speech saved to {mp3_file_path}")
+        print(f"Queued speech saving for {mp3_file_path}")
+    engine.runAndWait()
 
     if wipe:
         delete_all_posts()
