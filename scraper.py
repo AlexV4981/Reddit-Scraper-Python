@@ -1,7 +1,5 @@
 import requests
 from bs4 import BeautifulSoup
-
-
 """
 For this to work the object MUST use get_all_post_details() BEFORE you try and get post information otherwise
 it will be empty and it WILL crash
@@ -17,13 +15,17 @@ class RedditPostExtractor:
         self.after_param = None
         self.all_post_details = []
 
+    def __init__(self):
+        self.subreddit_name = "Utils"
+        self.base_url = "https://utils"
+
     def get_listings_url(self):
         listings_url = f"{self.base_url}/r/{self.subreddit_name}/top/?feedViewType=compactView"
         if self.after_param:
             listings_url += f"&after={self.after_param}"
         return listings_url
 
-    def extract_post_details(self, post_url):
+    def extract_post_details(self, post_url,printDetails=True):
         response = requests.get(post_url)
         if response.ok:
             soup = BeautifulSoup(response.content, 'html.parser')
@@ -32,7 +34,8 @@ class RedditPostExtractor:
             if title_element:
                 # Extract title (handling potential None value)
                 title = title_element.text.strip() if title_element else None
-                print(title)
+                if printDetails:
+                    print(title)
 
                 # Existing logic for body element (assuming it's already implemented)
                 parent_element = soup.find('div', class_='text-neutral-content', slot='text-body')
@@ -93,9 +96,6 @@ class RedditPostExtractor:
                 print("No posts found or errors occurred while extracting details.")
 
         return self.all_post_details  # Optionally return the list of extracted details
-
-
-
 
     #title, body, URL is houw the list is made
     def get_post_by_index(self,index):

@@ -4,37 +4,52 @@ from scraper import RedditPostExtractor
 
 
 def archive(database_file='scraper.db'):
+    try:
+        conn = sqlite3.connect(database_file)
+        c = conn.cursor()
+
+        # Create archive table with UNIQUE constraint to prevent duplicates
+        c.execute('''CREATE TABLE IF NOT EXISTS archive (
+                        body TEXT,
+                        url TEXT UNIQUE
+                    )''')
+        conn.commit()
+
+        # Insert new posts, ignoring duplicates
+        c.execute('''INSERT OR IGNORE INTO archive (body, url)
+                    SELECT body, url FROM redditPosts''')
+
+        conn.commit()
+        print("Archived Posts Successfully")
+
+    except sqlite3.Error as e:
+        print(f"Error archiving deleted posts: {e}")
+
+    finally:
+        if conn:
+            conn.close()
+
+
+def return_archive_body_url(database_file='scraper.db'):
   try:
-      conn = sqlite3.connect('scraper.db')
+      conn = sqlite3.connect(database_file)
       c = conn.cursor()
-      c.execute('''CREATE TABLE IF NOT EXISTS archive (
-                  body TEXT,
-                  url TEXT
-              )''')
-      conn.commit()
+      c.execute("SELECT * FROM archive")
+      posts = c.fetchall()
+      info = set()
+      for post in posts:
+          info.add(post)
+  
   except sqlite3.Error as e:
-      print(f"Error creating archive table: {e}")
+      print(f"Couldnt return post information: {e}")
+  
   finally:
       if conn:
           conn.close()
+      return info
 
-  try:
-    conn = sqlite3.connect(database_file)
-    c = conn.cursor()
-    
 
-    c.execute("INSERT INTO archive (body,url) "
-    "          SELECT body,url FROM redditPosts" )
-
-    conn.commit()
-    print("Archived Posts Successfully")
-
-  except sqlite3.Error as e:
-    print(f"Error archiving deleted posts {e}")
-  finally:
-    if conn:
-      conn.close()
-
+      
 
 def display_archive():
   try:
@@ -107,6 +122,7 @@ def delete_all_posts(database_file='scraper.db'):
       conn.close()
 
 def insert_all_posts(RedditScrape=RedditPostExtractor):
+    
     """
     Title is index 0
     Body is index 1
@@ -274,3 +290,7 @@ def get_table_by_index(database_file='scraper.db', table_name='redditPosts', ind
 
   finally:
     conn.close()
+
+
+
+#get titles sepreate archive and current
