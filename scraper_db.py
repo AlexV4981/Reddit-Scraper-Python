@@ -1,6 +1,78 @@
 import sqlite3
 from scraper import RedditPostExtractor
 
+
+
+def archive(database_file='scraper.db'):
+  try:
+      conn = sqlite3.connect('scraper.db')
+      c = conn.cursor()
+      c.execute('''CREATE TABLE IF NOT EXISTS archive (
+                  body TEXT,
+                  url TEXT
+              )''')
+      conn.commit()
+  except sqlite3.Error as e:
+      print(f"Error creating archive table: {e}")
+  finally:
+      if conn:
+          conn.close()
+
+  try:
+    conn = sqlite3.connect(database_file)
+    c = conn.cursor()
+    
+
+    c.execute("INSERT INTO archive (body,url) "
+    "          SELECT body,url FROM redditPosts" )
+
+    conn.commit()
+    print("Archived Posts Successfully")
+
+  except sqlite3.Error as e:
+    print(f"Error archiving deleted posts {e}")
+  finally:
+    if conn:
+      conn.close()
+
+
+def display_archive():
+  try:
+    conn = sqlite3.connect('scraper.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM archive")
+    rows = c.fetchall()
+
+    for row in rows:
+      print(row)
+
+
+  except sqlite3.Error as e:
+    print(f"Error displaying archive {e}")
+  finally:
+    if conn:
+      conn.close()
+
+
+def wipe_archive():
+  try:
+    conn = sqlite3.connect('scraper.db')
+    c = conn.cursor()
+    c.execute("DELETE FROM archive")
+    deleted_count = c.rowcount
+
+    conn.commit()
+
+    print(f"Archive has been wiped, Total gone: {deleted_count}")
+    
+  except sqlite3.Error as e:
+    print(f"Error wiping archive: {e}")
+  
+  finally:
+    if conn:
+      conn.close()
+
+
 def delete_all_posts(database_file='scraper.db'):
   """Deletes all posts from the specified SQLite database.
 
@@ -13,6 +85,7 @@ def delete_all_posts(database_file='scraper.db'):
   """
 
   try:
+    archive()
     conn = sqlite3.connect(database_file)
     c = conn.cursor()
 
@@ -123,7 +196,7 @@ def scrape_and_save_all_posts(Subreddit=str, printAmount=False):
               )''')
       conn.commit()
   except sqlite3.Error as e:
-      print(f"Error creating table: {e}")
+      print(f"Error creating redditPosts table: {e}")
   finally:
       if conn:
           conn.close()
@@ -201,6 +274,3 @@ def get_table_by_index(database_file='scraper.db', table_name='redditPosts', ind
 
   finally:
     conn.close()
-
-
-
