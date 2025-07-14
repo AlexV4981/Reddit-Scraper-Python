@@ -1,15 +1,11 @@
 # Reddit-Scraper-Python
 
-QOL update adds folders named 
+To compile copy and paste this command into your terminal with the all the files in it 
 
 
-MonthDay(number)
+
+pyinstaller --onedir reddit.py
 
 
-Folder is generated in the same directory
 
-
-TTS files and folders are made at the same time
-
-
-Sorted relatively if ran multiple times
+All output excpet the DB will be in the _internal folder
